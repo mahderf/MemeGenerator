@@ -37,8 +37,10 @@ public class HomeController {
     CloudinaryConfig cloudinaryConfig;
 
     @GetMapping("/")
-    public String welocme(){
-        return"index";
+    public String welocme(Model model){
+        model.addAttribute("images",uploadsRepository.findAll());
+
+        return"show";
     }
 
     @RequestMapping(value="/register",method= RequestMethod.GET)
@@ -65,12 +67,13 @@ public class HomeController {
         @GetMapping("/addimage")
     public String loadImage(Model model){
         model.addAttribute("uploads", new Uploads());
-        return" uploadform";
+
+        return"uploadform";
         }
 
         @PostMapping("/addimage")
-    public String saveImage(@ModelAttribute("uploads") Uploads otherupload,
-                            @RequestParam("file")MultipartFile file)
+    public String saveImage(@ModelAttribute("uploads") Uploads uploads,
+                            @RequestParam("file")MultipartFile file, Model model)
         {
             if (file.isEmpty()) {
                 return "redirect:/addimage";
@@ -78,14 +81,14 @@ public class HomeController {
             try {
                 Map uploadResult = cloudinaryConfig.upload(file.getBytes(),
                         ObjectUtils.asMap("resourcetype","auto"));
-                otherupload.setImages(uploadResult.get("url").toString());
-                uploadsRepository.save(otherupload);
+                uploads.setImages(uploadResult.get("url").toString());
+                uploadsRepository.save(uploads);
             } catch (IOException e) {
                 e.printStackTrace();
                 return "redirect:/addimage";
             }
 
-          return"/";
+          return"redirect:/";
         }
 
     @RequestMapping("/login")

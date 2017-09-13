@@ -4,6 +4,8 @@ package com.mahi.demo.configuration;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Singleton;
 import com.cloudinary.Transformation;
+import com.mahi.demo.models.Uploads;
+import com.mahi.demo.repository.UploadsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,6 +16,8 @@ import java.util.Map;
 
 @Component
 public class CloudinaryConfig {
+    @Autowired
+    UploadsRepository uploadsRepository;
     private Cloudinary cloudinary;
 
     @Autowired
@@ -41,25 +45,8 @@ public class CloudinaryConfig {
 
         return cloudinary.url()
                 .transformation(new Transformation().width(width).height(height)
-                .border("2px_solid_black").crop(action))
+                        .effect("sharpen"))
                 .imageTag(name);
-
-    }
-    public void cropCircle()
-    {
-        cloudinary.url().transformation(new Transformation()
-                .width(400).height(400).gravity("face").radius("max").crop("crop").chain()
-                .width(200).crop("scale")).imageTag("lady.jpg");
     }
 
-    public void textAdd()
-    {
-        cloudinary.url().transformation(new Transformation().overlay("text:Arial_45_bold:Hello%20World")
-                .gravity("north_west").x(20).y(20)).imageTag("face_center.jpg");
-    }
-
-    public void textOverlay()
-    {
-        cloudinary.url().imageTag("black_bar.png");
-    }
 }
